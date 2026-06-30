@@ -1,9 +1,9 @@
-echo "AUTO DEPLOYER 2026\n"
+printf "\nAUTO DEPLOYER 2026\n\n"
 
 
 # Build unsigned APK with Gradle
 
-echo "\t[1/5] Assembling unsigned APK.."
+printf "\t[1/5] Assembling unsigned APK..\n"
 
 ./gradlew assemble >/dev/null
 
@@ -12,10 +12,10 @@ echo "\t[1/5] Assembling unsigned APK.."
 
 if ! [ -f auto_deployer-dependencies/quick-release-key.jks ]
 then	
-	echo "\t[2/5] Generating keystore file..."
+	printf "\t[2/5] Generating keystore file...\n"
 	keytool -genkey -keystore auto_deployer-dependencies/quick-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias andrewc < auto_deployer-dependencies/signature_details.txt 2>/dev/null
 else
-	echo "\t[2/5] Existing keystore file located..." 
+	printf "\t[2/5] Existing keystore file located...\n" 
 fi
 
 
@@ -29,14 +29,14 @@ ln -s app/build/outputs/apk/release/ ./
 
 # Align APK files (required before signing APK file)
 
-echo "\t[3/5] Aligning uncompressed APK files for storage optimization.."
+printf "\t[3/5] Aligning uncompressed APK files for storage optimization..\n"
 
 ./zipalign -P 16 -f 4 release/app-release-unsigned.apk release/app-release-unsigned-but-its-aligned.apk 2>/dev/null
 
 
 # Sign APK with keystore Java file
 
-echo "\t[4/5] Signing aligned APK.."
+printf "\t[4/5] Signing aligned APK..\n"
 
 ./apksigner sign --ks auto_deployer-dependencies/quick-release-key.jks --out release/app-release-signed.apk release/app-release-unsigned-but-its-aligned.apk <<< "123123" 1>/dev/null
 
@@ -48,4 +48,8 @@ rm ./zipalign ./apksigner ./release/app-release-unsigned.apk release/app-release
 
 rm auto_deployer-dependencies/quick-release-key.jks
 
-echo "\t[5/5] Signed APK file created successfully. File location:\n\t\t /app/build/outputs/apk/release/app-release-signed.apk"
+printf "\t[5/5] Signed APK file created successfully. File location:\n\t\t /app/build/outputs/apk/release/app-release-signed.apk\n\n"
+
+#### NEW
+
+#ln -s app/build/outputs/apk/release/app-release-signed.apk
