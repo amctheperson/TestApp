@@ -53,3 +53,13 @@ printf "\t[5/5] Signed APK file created successfully. File location:\n\t\t /app/
 #### NEW
 
 #ln -s app/build/outputs/apk/release/app-release-signed.apk
+#ln -s auto_deployer-dependencies/gh_2.95.0_macOS_amd64/bin/gh
+
+result=$(gh release view 2>&1)
+if [ "$result" = "release not found" ];
+	then gh release create v0.1 --latest --notes-file "auto_deployer-dependencies/release-notes.txt" --title "Test auto_release" app-release-signed.apk
+fi
+
+#clear init release
+#gh release delete v0.1 -y --cleanup-tag
+
