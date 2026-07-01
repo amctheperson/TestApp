@@ -2,7 +2,7 @@ printf "\nAUTO DEPLOYER 2026\n\n"
 
 
 # Build unsigned APK with Gradle
-
+# TODO Determine what inside Android Studio fixes the initial build
 printf "\t[1/5] Assembling unsigned APK..\n"
 
 ./gradlew assemble >/dev/null
@@ -52,8 +52,8 @@ printf "\t[5/5] Signed APK file created successfully. File location:\n\t\t /app/
 
 #### NEW
 
-ln -s app/build/outputs/apk/release/app-release-signed.apk
-ln -s auto_deployer-dependencies/gh_2.95.0_macOS_amd64/bin/gh
+#ln -s app/build/outputs/apk/release/app-release-signed.apk
+#ln -s auto_deployer-dependencies/gh_2.95.0_macOS_amd64/bin/gh
 
 result=$(gh release view 2>&1)
 if [ "$result" = "release not found" ];
