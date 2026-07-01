@@ -60,6 +60,6 @@ if [ "$result" = "release not found" ];
 	then gh release create v0.1 --latest --notes-file "auto_deployer-dependencies/release-notes.txt" --title "Test auto_release" app-release-signed.apk
 fi
 
-#clear init release
+clear init release
 #gh release delete v0.1 -y --cleanup-tag
 
