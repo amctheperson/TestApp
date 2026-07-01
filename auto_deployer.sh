@@ -52,8 +52,8 @@ printf "\t[5/5] Signed APK file created successfully. File location:\n\t\t /app/
 
 #### NEW
 
-#ln -s app/build/outputs/apk/release/app-release-signed.apk
-#ln -s auto_deployer-dependencies/gh_2.95.0_macOS_amd64/bin/gh
+ln -s app/build/outputs/apk/release/app-release-signed.apk
+ln -s auto_deployer-dependencies/gh_2.95.0_macOS_amd64/bin/gh
 
 result=$(gh release view 2>&1)
 if [ "$result" = "release not found" ];
