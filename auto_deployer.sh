@@ -55,11 +55,32 @@ printf "\t[5/5] Signed APK file created successfully. File location:\n\t\t /app/
 #ln -s app/build/outputs/apk/release/app-release-signed.apk
 #ln -s auto_deployer-dependencies/gh_2.95.0_macOS_amd64/bin/gh
 
+
+# git rev-parse mainly used for manipulating hashes into something readable
+# git rev-parse used here to get current hash of master branch on the repo
+# aka most recently committed hash
+
+most_recent_commit_hash=$(git rev-parse origin/master)
+
+# git show is a function for getting commit info by hash ID
+
+# format includes only the "subject" of the commit
+# as commits are default formatted as an email
+
+# no-patch flag removes all the diff (all the file changes in a commit, line by line)
+
+new_release_title=$(git show --format="%s" --no-patch "$most_recent_commit_hash")   
+new_release_notes_file="auto_deployer-dependencies/release-notes.txt"
+
+printf "\t[6/5] "
+
 result=$(gh release view 2>&1)
-if [ "$result" = "release not found" ];
-	then gh release create v0.1 --latest --notes-file "auto_deployer-dependencies/release-notes.txt" --title "Test auto_release" app-release-signed.apk
+if [ "$result" = "release not found" ]; then
+	printf "Uploading initial release to repo..\n"
+	new_link=$(gh release create v0.1 --latest --notes-file "$new_release_notes_file" --title "$new_release_title" app-release-signed.apk)
+	printf "\t[7/5] Initial release sent to repo. Page link:\n\t\t$new_link\n"	
 fi
 
-clear init release
+#clear init release
 #gh release delete v0.1 -y --cleanup-tag
 
