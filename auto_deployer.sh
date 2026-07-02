@@ -4,6 +4,7 @@ printf "\nAUTO DEPLOYER 2026\n\n"
 
 # Build unsigned APK with Gradle
 # TODO Determine what inside Android Studio fixes the initial build
+
 printf "\t[1/7] Assembling unsigned APK..\n"
 
 ./gradlew assemble >/dev/null
@@ -14,7 +15,12 @@ printf "\t[1/7] Assembling unsigned APK..\n"
 if ! [ -f auto_deployer-dependencies/quick-release-key.jks ]
 then	
 	printf "\t[2/7] Generating keystore file...\n"
-	keytool -genkey -keystore auto_deployer-dependencies/quick-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias andrewc < auto_deployer-dependencies/signature_details.txt 2>/dev/null
+
+	keytool -genkey -keystore \
+	auto_deployer-dependencies/quick-release-key.jks \
+	-keyalg RSA -keysize 2048 -validity 10000 \
+	-alias andrewc < auto_deployer-dependencies/signature_details.txt \
+	2>/dev/null
 else
 	printf "\t[2/7] Existing keystore file located...\n" 
 fi
@@ -32,24 +38,26 @@ ln -s app/build/outputs/apk/release/ ./
 
 printf "\t[3/7] Aligning uncompressed APK files for storage optimization..\n"
 
-./zipalign -P 16 -f 4 release/app-release-unsigned.apk release/app-release-unsigned-but-its-aligned.apk 2>/dev/null
+./zipalign -P 16 -f 4 release/app-release-unsigned.apk \
+release/app-release-unsigned-but-its-aligned.apk 2>/dev/null
 
 
 # Sign APK with keystore Java file
 
 printf "\t[4/7] Signing aligned APK..\n"
 
-./apksigner sign --ks auto_deployer-dependencies/quick-release-key.jks --out release/app-release-signed.apk release/app-release-unsigned-but-its-aligned.apk <<< "123123" 1>/dev/null
+./apksigner sign --ks auto_deployer-dependencies/quick-release-key.jks \
+--out release/app-release-signed.apk \
+release/app-release-unsigned-but-its-aligned.apk <<< "123123" 1>/dev/null
 
 # Removing symbolic links and intermediate apk files
 
 rm ./zipalign ./apksigner ./release/app-release-unsigned.apk release/app-release-unsigned-but-its-aligned.apk ./release
 
-# Removing keystore file for testing
-
-rm auto_deployer-dependencies/quick-release-key.jks
 
 printf "\t[5/7] Signed APK file created successfully. File location:\n\t\t /app/build/outputs/apk/release/app-release-signed.apk\n"
+
+
 
 #	=== Uploading release to GitHub repo ===
 
@@ -132,6 +140,14 @@ printf "\t[7/7] Release uploaded to GitHub repo. Page link:\n\t\t$new_link\n"
 
 # Removing established symbolic links 
 rm app-release-signed.apk gh
+
+# Testing commands
+
+# Removing keystore file
+
+#rm auto_deployer-dependencies/quick-release-key.jks
+
+# Removing releases
 
 #clear init release
 #gh release delete v0.1 -y --cleanup-tag
