@@ -72,15 +72,61 @@ most_recent_commit_hash=$(git rev-parse origin/master)
 new_release_title=$(git show --format="%s" --no-patch "$most_recent_commit_hash")   
 new_release_notes_file="auto_deployer-dependencies/release-notes.txt"
 
+tag=v0.1
+
 printf "\t[6/5] "
 
 result=$(gh release view 2>&1)
 if [ "$result" = "release not found" ]; then
+
 	printf "Uploading initial release to repo..\n"
-	new_link=$(gh release create v0.1 --latest --notes-file "$new_release_notes_file" --title "$new_release_title" app-release-signed.apk)
-	printf "\t[7/5] Initial release sent to repo. Page link:\n\t\t$new_link\n"	
+
+else
+	printf "Uploading new release to repo..\n"
+
+	# gh release view gets info on a GitHub release
+	# here it is being defaulted to the latest release
+	# and outputing a JSON string of just the tag name field
+	# and filtering said JSON string to just the tag name entry
+
+	curVersion=$(gh release view --json tagName --jq '.tagName')
+	newVersion=""
+
+	# For the scope of this proof of concept, we can make the assumption
+	# that this auto-deploy pipeline is for minor updates
+	# rather than major updates
+	# therefore release version numbers will never
+	# "round up majorly" like 0.9 -> 1.0
+
+	# aka 
+
+	# just append a "1" if last num is 9
+	# otherwise increase last digit by 1
+
+	if [ ${curVersion:(-1)} = "9" ]; then
+ 
+		newVersion="${curVersion}1" 
+	else    
+		# Essentially this is curVersion substring of length len(curVersion) - 1
+		# starting at position 0 
+		# and ${#curVersion} is the length of curVersion 
+		# and the double parentheses are for evaluating an arithmetic expression
+		# which we use to decrement the length value by 1 
+		prefix=${curVersion:0:$((${#curVersion}-1))} 
+	 
+		# Increments final character of curVersion as an integer 
+		suffix=$((${curVersion:(-1)}+1)) 
+	 
+		newVersion="${prefix}${suffix}"
+
+		tag=$newVersion
+	fi
 fi
+
+new_link=$(gh release create $tag --latest --notes-file "$new_release_notes_file" --title "$new_release_title" app-release-signed.apk)
+
+printf "\t[7/5] Release uploaded to GitHub repo. Page link:\n\t\t$new_link\n"
+
 
 #clear init release
 #gh release delete v0.1 -y --cleanup-tag
-
