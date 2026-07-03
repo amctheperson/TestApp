@@ -3,7 +3,6 @@ printf "\nAUTO DEPLOYER 2026\n\n"
 #	=== Compiling APK for release ==
 
 # Build unsigned APK with Gradle
-# TODO Determine what inside Android Studio fixes the initial build
 
 printf "\t[1/7] Assembling unsigned APK..\n"
 
@@ -29,8 +28,9 @@ fi
 # Symbolic links for zipalign and apksigner, releases folder too
 # For ease of implementation, removed at end of script to avoid clutter
 
-ln -s auto_deployer-dependencies/selected-Android-SDK-build-tools-37.0.0/zipalign ./zipalign
-ln -s auto_deployer-dependencies/selected-Android-SDK-build-tools-37.0.0/apksigner ./apksigner
+ln -s auto_deployer-dependencies/sdk/build-tools/37.0.0/apksigner ./apksigner
+ln -s auto_deployer-dependencies/sdk/build-tools/37.0.0/zipalign ./zipalign
+
 ln -s app/build/outputs/apk/release/ ./
 
 
