@@ -1,3 +1,2 @@
-MAJOR UPDATE: Alpha Update
-
-	*	TestApp initial release, now pushed from mobile hotspot
+Update Notes:
+    *   Initial release
