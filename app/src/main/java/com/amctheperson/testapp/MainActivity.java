@@ -51,7 +51,7 @@ public class MainActivity extends Activity {
 
                 String newName = name_entry.getText().toString();
 
-                greeting.setText("Hello, " + newName + ".");
+                greeting.setText("Hola, " + newName + ".");
 
             }
         });
